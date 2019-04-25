@@ -106,14 +106,34 @@ class Matrix:
     def __len__(self):
         return self.height * self.width
 
-    def __getitem__(self, index_tuple):
-        return self.get(index_tuple[0], index_tuple[1])
-    # replace with slice object?
+    def __getitem__(self, item):
+        if type(item) == type(tuple([])):
+            return self.get(item[0], item[1])
+        elif type(item) == type('Rx'):
+            if item[0].upper() == 'R':
+                return self.get_row(int(item[1:]))
+            elif item[0].upper() == 'C':
+                return self.get_column(int(item[1:]))
+        elif type(item) == type(0):
+            row = ((item - 1) // self.width) + 1
+            column = ((item - 1) % self.width) + 1
+            return self.get(row, column)
 
-    def __setitem__(self, index_tuple, value):
-        self.set(index_tuple[0], index_tuple[1], value)
+    def __setitem__(self, item, value):
+        if type(item) == type(tuple([])):
+            self.set(item[0], item[1], value)
+        elif type(item) == type('Rx'):
+            if item[0].upper() == 'R':
+                self.set_row(int(item[1:]), value)
+            elif item[0].upper() == 'C':
+                return self.set_column(int(item[1:]))
+        elif type(item) == type(0):
+            row = (item - 1) // self.width
+            column = ((item - 1) % self.width) + 1
+            self.set(row, column, self)
+        else:
+            return None
         return value
-    # replace with slice object?
 
 #   def __iter__(self):
 #       pass
@@ -125,7 +145,12 @@ class Matrix:
             new_matrix = self.copy()
             for row in range(1, self.height + 1):
                 for column in range(1, self.width + 1):
-                    new_matrix.set(row, column, self.get(row, column) + other.get(row, column))
+                    new_value = self.get(row, column) + other.get(row, column)
+                    if abs(new_value) < 10**-13:
+                        new_value = 0
+                    if abs(new_value) == 0:
+                        new_value = 0
+                    new_matrix.set(row, column, new_value)
         return new_matrix
 
     def __radd__(self, other):
@@ -145,6 +170,8 @@ class Matrix:
                     new_value = self.get(row, column) - other.get(row, column)
                     if abs(new_value) < 10**-13:
                         new_value = 0
+                    if abs(new_value) == 0:
+                        new_value = 0
                     new_matrix.set(row, column, new_value)
         return new_matrix
 
@@ -161,6 +188,8 @@ class Matrix:
             for row in range(1, self.height + 1):
                 for column in range(1, self.width + 1):
                     new_matrix.set(row, column, self.get(row, column) * other)
+                    if abs(new_matrix.get(row, column)) == 0:
+                        new_matrix.set(row, column, 0)
             return new_matrix
         elif self.order()[1] != other.order()[0]:
             return None
@@ -179,7 +208,10 @@ class Matrix:
         new_matrix = self.copy()
         for row in range(1, self.height + 1):
             for column in range(1, self.width + 1):
-                new_matrix.set(row, column, self.get(row, column) * other)
+                new_value = self.get(row, column) * other
+                if abs(new_value) == 0:
+                    new_value = 0
+                new_matrix.set(row, column, new_value)
         return new_matrix
 
     def __imul__(self, other):
@@ -201,39 +233,44 @@ class Matrix:
         new_matrix = self.copy()
         for row in range(1, self.height + 1):
             for column in range(1, self.width + 1):
-                new_matrix.set(row, column, self.get(row, column) / other)
+                new_value = self.get(row, column) / other
+                if abs(new_value) == 0:
+                    new_value = 0
+                new_matrix.set(row, column, new_value)
         return new_matrix
 
     def __rtruediv__(self, other):
         return NotImplemented
 
     def __itruediv__(self, other):
-        for row in range(1, self.height + 1):
-            for column in range(1, self.width + 1):
-                self.set(row, column, self.get(row, column) / other)
+        self = self / other
         return self
 
     def __floordiv__(self, other):
         new_matrix = self.copy()
         for row in range(1, self.height + 1):
             for column in range(1, self.width + 1):
-                new_matrix.set(row, column, self.get(row, column) // other)
+                new_value = self.get(row, column) // other
+                if abs(new_value) == 0:
+                    new_value = 0
+                new_matrix.set(row, column, new_value)
         return new_matrix
 
     def __rfloordiv__(self, other):
         return NotImplemented
 
     def __ifloordiv__(self, other):
-        for row in range(1, self.height + 1):
-            for column in range(1, self.width + 1):
-                self.set(row, column, self.get(row, column) // other)
+        self = self / other
         return self
 
     def __mod__(self, other):
         new_matrix = self.copy()
         for row in range(1, self.height + 1):
             for column in range(1, self.width + 1):
-                new_matrix.set(row, column, self.get(row, column) % other)
+                new_value = self.get(row, column) % other
+                if abs(new_value) == 0:
+                    new_value = 0
+                new_matrix.set(row, column, new_value)
         return new_matrix
 
     def __rmod__(self, other):
@@ -242,7 +279,7 @@ class Matrix:
     def __imod__(self, other):
         for row in range(1, self.height + 1):
             for column in range(1, self.width + 1):
-                self.set(row, column, self.get(row, column) % other)
+                self = self % other
         return self
 
     def __divmod__(self, other):
@@ -469,13 +506,23 @@ class Matrix:
 
     def inverse(self):
         if self.order()[0] != self.order()[1]:
+            print('Error: Cannot invert. Must be nxn matrix.')
             return None
         else:
             new_matrix = self.copy()
+            print(new_matrix)
             degree = new_matrix.order()[0]
-            new_matrix = new_matrix.conjoin(Matrix().identity(degree))
-            new_matrix = new_matrix.rref()
-            inv_matrix = new_matrix.get_submatrix((1, 1 + new_matrix.height), (new_matrix.height, 2 * new_matrix.height))
+            aug_matrix = new_matrix.conjoin(Matrix().identity(degree))
+            print(aug_matrix)
+            aug_matrix = aug_matrix.rref()
+            print(aug_matrix)
+            inv_matrix = aug_matrix.get_submatrix((1, 1 + degree), (degree, 2 * degree))
+            print(inv_matrix)
+            zero = Matrix().zero(1, degree)
+            for row in range(degree):
+                if aug_matrix.get_submatrix((1, 1), (degree, degree)) == zero and inv_matrix.get_submatrix((1, 1), (degree, degree)) != zero:
+                    print('Error: Cannot invert. No solution to rref(A|I).')
+                    return None
             return inv_matrix
 
     def copy(self):
@@ -497,17 +544,17 @@ class Matrix:
             new_matrix.add_column(other.get_column(i))
         return new_matrix
 
-    def R(self, row):
+    def R(self, row): # deprecated in favor of A['R1'], but still better when referring to rows using variables
         row_list = self.get_row(row)
         return self.get_row(row)
 
-    def set_R(self, row, matrix):
+    def set_R(self, row, matrix): # deprecated in favor of A['R1'], but still better when referring to rows using variables
         self.set_row(row, matrix)
 
     def swap_R(self, row1, row2):
-        tmp = self.R(row1)
-        self.set_R(row1, self.R(row2))
-        self.set_R(row2, tmp)
+        tmp = self.get_row(row1)
+        self.set_row(row1, self.get_row(row2))
+        self.set_row(row2, tmp)
 
     def rref(self):
         new_matrix = self.copy()
@@ -521,10 +568,10 @@ class Matrix:
                 m += 1 # Shifts the start index over one column, but does not shift down a row
             else:
                 new_matrix.swap_R(n, i)
-                new_matrix.set_R(n, 1/new_matrix.get(n, m) * new_matrix.R(n))
+                new_matrix['R{}'.format(n)] /= new_matrix.get(n, m) # Old method: new_matrix .set_R(n, 1/new_matrix.get(n, m) * new_matrix.R(n))
                 for j in range(1, new_matrix.height + 1):
                     if j != n and new_matrix.get(j, m) != 0:
-                        new_matrix.set_R(j, new_matrix.R(j) - new_matrix.get(j, m) * new_matrix.R(n))
+                        new_matrix['R{}'.format(j)] -= new_matrix[j,m] * new_matrix['R{}'.format(n)] # Old method: new_matrix.set_R(j, new_matrix.R(j) - new_matrix.get(j, m) * new_matrix.R(n))
                 m += 1 # Shifts the start index over one column
                 n += 1 # Shifts the start index down one row
         return new_matrix
@@ -587,7 +634,17 @@ def test():
     print('rref(A):')
     print(A.rref())
     print('A^-1:')
-    print(A.inverse())
+    print(A**-1)
+    print('A[3,3]:')
+    print(A[3,3])
+    print("\nA['R2']:")
+    print(A['R2'])
+    print('A[5]:')
+    print(A[5])
+    print("\nA['R2'] = A['R2'] + 2 * A['R3']")
+    print('A after operation:')
+    A['R2'] = A['R2'] + 2 * A['R3']
+    print(A)
 
 if __name__ == '__main__':
     test()
