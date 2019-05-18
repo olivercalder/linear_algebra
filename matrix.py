@@ -505,7 +505,8 @@ class Matrix:
         else:
             determinant = 0
             for j in range(1, A.width + 1):
-                determinant += (-1)**(j+1) * A[1,j] * A.minor(1,j).det()
+                if A[1,j] != 0:
+                    determinant += (-1)**(j+1) * A[1,j] * A.minor(1,j).det()
             return determinant
 
     def inverse(self):
