@@ -415,6 +415,7 @@ class Matrix:
     def set_row(self, row, data):
         if type(data) == type(list()):
             if self.width != 0 and self.width != len(data):
+                print('Error: Cannot set row. Length does not match.')
                 return None
             else:
                 for i in range(1, self.width + 1):
@@ -424,16 +425,19 @@ class Matrix:
                 if self.width == data.height and data.width == 1:
                     data = data.flip()
                 else:
+                    print('Error: Cannot set row. Size does not match.')
                     return None
             if data.height == 1:
                 for i in range(1, self.width + 1):
                     self.set(row, i, data.get(1, i))
         else:
+            print('Error: Cannot set row. Type does not match.')
             return None
 
     def set_column(self, column, data):
         if type(data) == type(list()):
             if self.height != 0 and self.height != len(data):
+                print('Error: Cannot set column. Length does not match.')
                 return None
             else:
                 for i in range(1, self.height + 1):
@@ -443,11 +447,13 @@ class Matrix:
                 if self.height == data.width and data.height == 1:
                     data = data.flip()
                 else:
+                    print('Error: Cannot set column. Size does not match.')
                     return None
             if data.width == 1:
                 for i in range(1, self.height + 1):
                     self.set(i, column, data.get(i, 1))
         else:
+            print('Error: Cannot set column. Type does not match.')
             return None
 
     def add_row(self, data):
@@ -461,6 +467,7 @@ class Matrix:
             self.set_row(self.height, data)
             return self
         else:
+            print('Error: Cannot add row. Length or type does not match.')
             return None
 
     def add_column(self, data):
@@ -475,74 +482,70 @@ class Matrix:
             self.set_column(self.width, data)
             return self
         else:
+            print('Error: Cannot add column. Length or type does not match.')
             return None
 
-#   def build(self, data):
-#       for i in range(len(data)):
-#           self.set_row(i + 1, data[i])
+    def minor(self, i, j):
+        ij_minor = Matrix()
+        for r in range(1, self.height + 1):
+            if r != i:
+                new_row = []
+                for c in range(1, self.width + 1):
+                    if c != j:
+                        new_row.append(self[r,c])
+                ij_minor.add_row(new_row)
+        return ij_minor
 
     def det(self):
-        print('Matrix being called with .det():')
-        print(self)
-        if self.height != self.width:
+        A = self
+        if A.height != A.width:
             return None
-        elif self.height == 2 and self.width == 2:
-            return (self.get(1, 1) * self.get(2, 2)) - (self.get(1, 2) * self.get(2, 1))
+        elif A.height == 1 and A.width == 1:
+            return A[1,1]
         else:
             determinant = 0
-            for i in range(1, self.width + 1):
-                new_matrix = Matrix()
-                for j in range(2, self.height + 1):
-                    new_row = []
-                    for k in range(1, self.width + 1):
-                        if k != i:
-                            new_row.append(self.get(j, k))
-                    new_matrix.add_row(new_row)
-                if i%2 == 1:
-                    determinant += self.get(1, i) * new_matrix.det()
-                elif i%2 == 0:
-                    determinant -= self.get(1, i) * new_matrix.det()
+            for j in range(1, A.width + 1):
+                determinant += (-1)**(j+1) * A[1,j] * A.minor(1,j).det()
             return determinant
 
     def inverse(self):
         if self.order()[0] != self.order()[1]:
             print('Error: Cannot invert. Must be nxn matrix.')
             return None
+        elif self.det() == 0:
+            print('Error: Cannot invert. Determinant = 0.')
+            return None
         else:
-            new_matrix = self.copy()
-            print(new_matrix)
-            degree = new_matrix.order()[0]
-            aug_matrix = new_matrix.conjoin(Matrix().identity(degree))
-            print(aug_matrix)
-            aug_matrix = aug_matrix.rref()
-            print(aug_matrix)
-            inv_matrix = aug_matrix.get_submatrix((1, 1 + degree), (degree, 2 * degree))
-            print(inv_matrix)
+            A = self.copy()
+            degree = A.order()[0]
+            Aaug = A.conjoin(Matrix().identity(degree))
+            Aaug = Aaug.rref()
+            Ainv = Aaug.get_submatrix((1, 1+degree), (degree, 2*degree))
             zero = Matrix().zero(1, degree)
             for row in range(degree):
-                if aug_matrix.get_submatrix((1, 1), (degree, degree)) == zero and inv_matrix.get_submatrix((1, 1), (degree, degree)) != zero:
+                if Aaug.get_submatrix((1, 1), (degree, degree)) == zero and Ainv.get_submatrix((1, 1), (degree, degree)) != zero:
                     print('Error: Cannot invert. No solution to rref(A|I).')
                     return None
-            return inv_matrix
+            return Ainv
 
     def copy(self):
-        new_matrix = Matrix()
+        A = Matrix()
         for i in range(1, self.height + 1):
-            new_matrix.add_row(self.get_row(i))
-        return new_matrix
+            A.add_row(self.get_row(i))
+        return A
     
     def flip(self):
-        new_matrix = Matrix().empty(self.width, self.height)
-        for i in range(1, new_matrix.height + 1):
-            for j in range(1, new_matrix.width + 1):
-                new_matrix.set(i, j, self.get(j, i))
-        return new_matrix
+        A = Matrix().empty(self.width, self.height)
+        for i in range(1, A.height + 1):
+            for j in range(1, A.width + 1):
+                A.set(i, j, self.get(j, i))
+        return A
 
     def conjoin(self, other):
-        new_matrix = self.copy()
+        A = self.copy()
         for i in range(1, other.width + 1):
-            new_matrix.add_column(other.get_column(i))
-        return new_matrix
+            A.add_column(other.get_column(i))
+        return A
 
     def R(self, row): # deprecated in favor of A['R1'], but still better when referring to rows using variables
         row_list = self.get_row(row)
@@ -557,24 +560,24 @@ class Matrix:
         self.set_row(row2, tmp)
 
     def rref(self):
-        new_matrix = self.copy()
+        A = self.copy()
         n = 1
         m = 1
-        while n <= new_matrix.height and m <= new_matrix.width:
+        while n <= A.height and m <= A.width:
             i = n
-            while i <= new_matrix.height and new_matrix.get(i, m) == 0:
+            while i <= A.height and A.get(i, m) == 0:
                 i += 1
-            if i > new_matrix.height:
+            if i > A.height:
                 m += 1 # Shifts the start index over one column, but does not shift down a row
             else:
-                new_matrix.swap_R(n, i)
-                new_matrix['R{}'.format(n)] /= new_matrix.get(n, m) # Old method: new_matrix .set_R(n, 1/new_matrix.get(n, m) * new_matrix.R(n))
-                for j in range(1, new_matrix.height + 1):
-                    if j != n and new_matrix.get(j, m) != 0:
-                        new_matrix['R{}'.format(j)] -= new_matrix[j,m] * new_matrix['R{}'.format(n)] # Old method: new_matrix.set_R(j, new_matrix.R(j) - new_matrix.get(j, m) * new_matrix.R(n))
+                A.swap_R(n, i)
+                A['R{}'.format(n)] /= A[n,m] # Old method: A.set_R(n, 1/A.get(n, m) * A.R(n))
+                for j in range(1, A.height + 1):
+                    if j != n and A.get(j, m) != 0:
+                        A['R{}'.format(j)] -= A[j,m] * A['R{}'.format(n)] # Old method: A.set_R(j, A.R(j) - A.get(j, m) * A.R(n))
                 m += 1 # Shifts the start index over one column
                 n += 1 # Shifts the start index down one row
-        return new_matrix
+        return A
 
     def get_row_string(self, row):
         row_string = '( '
