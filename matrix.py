@@ -25,6 +25,8 @@ class Matrix:
         if height != None:
             self.height = height
             self.width = width
+        if width == None:
+            self.width = self.height
         self.matrix = []
         for h in range(self.height):
             self.matrix.append([])
