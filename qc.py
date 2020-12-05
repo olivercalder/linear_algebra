@@ -6,7 +6,6 @@ import cmath
 import numpy
 
 
-
 ### CONSTANTS ###
 
 # We haven't discussed this trivial case, but a 0-qbit state or gate is the complex scalar 1, represented as the following object. Notice that this object is neither the column vector numpy.array([1 + 0j]) nor the matrix numpy.array([[1 + 0j]]).
