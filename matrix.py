@@ -295,10 +295,12 @@ class Matrix:
 
     def __pow__(self, other):
         if other < 0:
-            self = self.inverse()
-        new_matrix = self.copy()
+            new_matrix = self.inverse()
+        else:
+            new_matrix = self.copy()
+        multiplicand = new_matrix.copy()
         for i in range(1, int(abs(other))):
-            new_matrix *= self
+            new_matrix *= multiplicand
         return new_matrix
 
     def __rpow__(self, other):
@@ -354,8 +356,7 @@ class Matrix:
         return NotImplemented
 
     def __neg__(self):
-        self = -1 * self
-        return self
+        return -1 * self
 
     def __abs__(self):
         if self.height == 1 or self.width == 1:
@@ -368,8 +369,7 @@ class Matrix:
             return self.det()
 
     def __invert__(self):
-        self = self.inverse()
-        return self
+        return self.inverse()
 
     def order(self):
         return tuple([self.height, self.width])
