@@ -8,7 +8,10 @@ import numpy
 
 ### CONSTANTS ###
 
-# We haven't discussed this trivial case, but a 0-qbit state or gate is the complex scalar 1, represented as the following object. Notice that this object is neither the column vector numpy.array([1 + 0j]) nor the matrix numpy.array([[1 + 0j]]).
+# We haven't discussed this trivial case, but a 0-qbit state or gate is the
+# complex scalar 1, represented as the following object. Notice that this
+# object is neither the column vector numpy.array([1 + 0j]) nor the matrix
+# numpy.array([[1 + 0j]]).
 one = numpy.array(1 + 0j)
 
 # Our favorite one-qbit states.
@@ -19,19 +22,19 @@ ketMinus = numpy.array([1 / math.sqrt(2), -1 / math.sqrt(2)])
 
 # Our favorite one-qbit gates.
 i = numpy.array([
-    [1 + 0j, 0 + 0j], 
+    [1 + 0j, 0 + 0j],
     [0 + 0j, 1 + 0j]])
 x = numpy.array([
-    [0 + 0j, 1 + 0j], 
+    [0 + 0j, 1 + 0j],
     [1 + 0j, 0 + 0j]])
 y = numpy.array([
-    [0 + 0j, 0 - 1j], 
+    [0 + 0j, 0 - 1j],
     [0 + 1j, 0 + 0j]])
 z = numpy.array([
-    [1 + 0j, 0 + 0j], 
+    [1 + 0j, 0 + 0j],
     [0 + 0j, -1 + 0j]])
 h = numpy.array([
-    [1 / math.sqrt(2) + 0j, 1 / math.sqrt(2) + 0j], 
+    [1 / math.sqrt(2) + 0j, 1 / math.sqrt(2) + 0j],
     [1 / math.sqrt(2) + 0j, -1 / math.sqrt(2) + 0j]])
 
 # Constant two-qbit gates.
@@ -49,13 +52,13 @@ swap = numpy.array([
 # Constant three-qbit gates.
 toffoli = numpy.array([
     [1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j],
-    [0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j], 
-    [0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j], 
-    [0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j], 
-    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j], 
-    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j], 
-    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j], 
-    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j]]) 
+    [0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j],
+    [0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j],
+    [0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j],
+    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j, 0 + 0j],
+    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j, 0 + 0j],
+    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j],
+    [0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 0 + 0j, 1 + 0j, 0 + 0j]])
 
 
 
@@ -64,7 +67,8 @@ toffoli = numpy.array([
 # We represent an n-bit string --- that is, an element of {0, 1}^n --- in Python as a tuple of 0s and 1s.
 
 def string(n, m):
-    '''Converts a non-negative Python integer m to its corresponding bit string. As necessary, pads with leading 0s to bring the number of bits up to n.'''
+    '''Converts a non-negative Python integer m to its corresponding bit string.
+    As necessary, pads with leading 0s to bring the number of bits up to n.'''
     s = ()
     while m >= 1:
         s = (m % 2,) + s
@@ -80,7 +84,8 @@ def integer(s):
     return m
 
 def next(s):
-    '''Given an n-bit string s, returns the next n-bit string. The order is lexicographic, except that there is a string after 1...1, namely 0...0.'''
+    '''Given an n-bit string s, returns the next n-bit string. The order is
+    lexicographic, except that there is a string after 1...1, namely 0...0.'''
     k = len(s) - 1
     while k >= 0 and s[k] == 1:
         k -= 1
@@ -90,7 +95,8 @@ def next(s):
         return s[:k] + (1,) + (len(s) - k - 1) * (0,)
 
 def nextTest(n):
-    '''A unit test for some basic bit-string routines. Should print the integers from 0 to 2^n - 1.'''
+    '''A unit test for some basic bit-string routines. Should print the integers
+    from 0 to 2^n - 1.'''
     s = string(n, 0)
     m = integer(s)
     print(m)
@@ -109,7 +115,9 @@ def dot(s, t):
     return sum([s[k] * t[k] for k in range(len(s))]) % 2
 
 def reduction(a):
-    '''A is a list of m >= 1 bit strings of equal dimension n >= 1. In other words, A is a non-empty m x n binary matrix. Returns the reduced row-echelon form of A. A itself is left unaltered.'''
+    '''A is a list of m >= 1 bit strings of equal dimension n >= 1. In other
+    words, A is a non-empty m x n binary matrix. Returns the reduced
+    row-echelon form of A. A itself is left unaltered.'''
     b = a.copy()
     m = len(b)
     n = len(b[0])
@@ -142,7 +150,7 @@ def reduction(a):
     return b
 
 def msb(x):
-    ''' Returns a mask of the most significant bit of the given integer x.'''
+    '''Returns a mask of the most significant bit of the given integer x.'''
     count = 1
     while x | (x >> 1) != x:
         x |= x >> count
@@ -158,7 +166,7 @@ def function(n, m, f):
     as input an n-bit string alpha and returns as output an m-bit string
     f(alpha). See deutschTest for examples of f. This function returns the
     (n + m)-qbit gate F that corresponds to f.'''
-    F = numpy.zeros((2**(n+m), 2**(n+m)), dtype=numpy.array(0 + 0j).dtype)
+    F = numpy.zeros((2**(n + m), 2**(n + m)), dtype=numpy.array(0 + 0j).dtype)
     for a in range(2**n):
         for b in range(2**m):
             col = (a << m) | b
@@ -171,7 +179,7 @@ def fourier(n):
     T = numpy.zeros((2**n,2**n), dtype=numpy.array(0 + 0j).dtype)
     for a in range(2**n):
         for b in range(2**n):
-            T[a, b] = numpy.exp(1j * 2 * math.pi * a * b / (2**n)) / (2**(n/2)) 
+            T[a, b] = numpy.exp(1j * 2 * math.pi * a * b / (2**n)) / (2**(n/2))
     return T
 
 def get_ketrho(n):
@@ -316,7 +324,9 @@ def continuedFraction(n, m, x0):
     return (c, d)
 
 def distance(gate, m):
-    '''Given an (n + 1)-qbit gate U (such as a controlled-V gate, where V is n-qbit), performs swaps to insert m extra wires between the first qbit and the other n qbits. Returns an (n + 1 + m)-qbit gate.'''
+    '''Given an (n + 1)-qbit gate U (such as a controlled-V gate, where V is
+    n-qbit), performs swaps to insert m extra wires between the first qbit and
+    the other n qbits. Returns an (n + 1 + m)-qbit gate.'''
     n = round(math.log2(len(gate))) - 1
     if n == 1:
         swapper = swap
@@ -330,7 +340,7 @@ def distance(gate, m):
     return u
 
 def control(gate):
-    '''Given an n-qbit gate U, returns the (n+1)-qbit gate cU, in which the
+    '''Given an n-qbit gate U, returns the (n + 1)-qbit gate cU, in which the
     first qbit controls whether U is applied to the last n qbits.'''
     assert(gate.shape[0] == gate.shape[1])
     assert(msb(gate.shape[0]) == gate.shape[0])
@@ -346,7 +356,9 @@ def control(gate):
 ### MEASUREMENT ###
 
 def first(state):
-    '''A function which takes an n-qbit state psi and performs a partial measurement on the first bit. Returns a tuple consisting of a classical one-qbit state (either ket0 or ket1) and an (n-1)-qbit state.'''
+    '''A function which takes an n-qbit state psi and performs a partial
+    measurement on the first bit. Returns a tuple consisting of a classical
+    one-qbit state (either ket0 or ket1) and an (n-1)-qbit state.'''
     if len(state.shape) != 1 or state.shape[0] != msb(state.shape[0]):
         print('ERROR: first requires an n-qbit state represented by a numpy array with shape (2^n,).')
         print('    Given numpy array with shape: {}'.format(state.shape))
@@ -363,16 +375,18 @@ def first(state):
         return (ket1, (1 / math.sqrt(tau_sq)) * omega)
 
 def last(state):
-    '''A function which takes an n-qbit state psi and performs a partial measurement on the last bit. Returns a tuple consisting of a classical one-qbit state (either ket0 or ket1) and an (n-1)-qbit state.'''
+    '''A function which takes an n-qbit state psi and performs a partial
+    measurement on the last bit. Returns a tuple consisting of a classical
+    one-qbit state (either ket0 or ket1) and an (n-1)-qbit state.'''
     if len(state.shape) != 1 or state.shape[0] != msb(state.shape[0]):
         print('ERROR: first requires an n-qbit state represented by a numpy array with shape (2^n,).')
         print('    Given numpy array with shape: {}'.format(state.shape))
         assert(len(state.shape) == 1)
         assert(state.shape[0] == msb(state.shape[0]))
     n = state.shape[0]
-    chi = numpy.array([state[k*2] for k in range(n//2)])
+    chi = numpy.array([state[k*2] for k in range(n // 2)])
     sigma_sq = sum([ind * numpy.conj(ind) for ind in chi]).real
-    omega = numpy.array([state[k*2+1] for k in range(n//2)])
+    omega = numpy.array([state[k*2+1] for k in range(n // 2)])
     tau_sq = sum([ind * numpy.conj(ind) for ind in omega]).real
     if random.random() < sigma_sq:
         return (ket0, (1 / math.sqrt(sigma_sq)) * chi)
@@ -410,10 +424,13 @@ def deutsch(f):
     return first(application(tensor(h, h), application(f, application(tensor(h, h), tensor(ket1, ket1)))))[0]
 
 def bernsteinVazirani(n, f):
-    '''Given n>= 1 and an (n+1)-qbit gate f representing a function {0, 1}^n -> {0, 1} defined by mod-2 dot product with an unknown w in {0, 1}^n, returns the list or tuple of n classical one-qbit states (ket0 or ket1) corresponding to w.'''
+    '''Given n >= 1 and an (n + 1)-qbit gate f representing a function
+    {0, 1}^n -> {0, 1} defined by mod-2 dot product with an unknown w in
+    {0, 1}^n, returns the list or tuple of n classical one-qbit states (ket0 or
+    ket1) corresponding to w.'''
     # returns measurements of the first n qbits of (H^(n+1))F(H^(n+1))(|0...0>|1>)
     measurements = []
-    state = application(power(h, n+1), application(f, application(power(h, n+1), tensor(power(ket0, n), ket1))))
+    state = application(power(h, n + 1), application(f, application(power(h, n + 1), tensor(power(ket0, n), ket1))))
     for i in range(n):
         bit, state = first(state)
         measurements.append(bit)
@@ -530,7 +547,7 @@ def shor(n, f):
 
 def grover(n, f):
     '''Implements the Grover core subroutine with known k = 1. The f parameter
-    is an (n + 1-qbit gate representing an f: {0, 1^n} -> {0, 1} such that
+    is an (n + 1)-qbit gate representing an f: {0, 1^n} -> {0, 1} such that
     SUM_alpha f(alpha) = 1. Return a list or tuple of n classical one-qbit
     states (either ket0 or ket1), such that the corresponding n-bit string is
     usually equal to the alpha such that f(alpha) = 1.'''
@@ -541,7 +558,7 @@ def grover(n, f):
     r = get_r(n)
     r_apply_f = application(tensor(r, i), f)
 
-    t = math.asin(k**(1/2) * 2**(-n/2))
+    t = math.asin(k**(1 / 2) * 2**(-n / 2))
     raw_l = (math.pi / (4 * t)) - 0.5
     if raw_l % 1 < 0.5:
         l = int(raw_l)
@@ -581,7 +598,7 @@ h7 = power(h, 7)
 
 # Encoding gate and encoded states
 l7 = application(i7 + m07, application(i7 + m17, i7 + m27)) / 8
-e7 = l7 * (2**(3/2))
+e7 = l7 * (2**(3 / 2))
 ket07 = application(e7, power(ket0, 7))
 ket17 = application(e7, power(ket1, 7))
 
@@ -591,7 +608,8 @@ ket17 = application(e7, power(ket1, 7))
 #print(numpy.dot(numpy.conj(ket17), ket17))
 
 def error7(state7, report=False):
-    '''Applies one of the 22 errors (including the trivial error) to state7, and returns the corrupted state.'''
+    '''Applies one of the 22 errors (including the trivial error) to state7,
+    and returns the corrupted state.'''
     index = random.randrange(23)
     if index < 7:
         j = index
@@ -740,8 +758,9 @@ def firstTest():
     print(state - tensor(meas[0], meas[1]))
 
 def firstTest345(n, m):
-    '''Assumes n>= 1. Uses one more qbit than that, so that the total number of qbits is n + 1.
-    The parameter m is how many tests to run. Should return a number close to 0.64 for large m.'''
+    '''Assumes n >= 1. Uses one more qbit than that, so that the total number
+    of qbits is n + 1. The parameter m is how many tests to run. Should return
+    a number close to 0.64 for large m.'''
     psi0 = 3 / 5
     beta = uniform(n)
     psi1 = 4 / 5
@@ -771,8 +790,9 @@ def lastTest():
     print(state - tensor(meas[1], meas[0]))
 
 def lastTest345(n, m):
-    '''Assumes n>= 1. Uses one more qbit than that, so that the total number of qbits is n + 1.
-    The parameter m is how many tests to run. Should return a number close to 0.64 for large m.'''
+    '''Assumes n >= 1. Uses one more qbit than that, so that the total number of
+    qbits is n + 1. The parameter m is how many tests to run. Should return a
+    number close to 0.64 for large m.'''
     psi0 = 3 / 5
     beta = uniform(n)
     psi1 = 4 / 5
